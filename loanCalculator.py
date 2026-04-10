@@ -56,9 +56,19 @@ elif choice == "2":
 
     # Prompt user for fixed period duration
     fixed_years = float(input("Enter the duration of the fixed period in years: "))
-    Tf = fixed_years * 12  # Convert years to months
+    Tf = int(fixed_years * 12)  # Convert years to months
 
-    U = G * T * (payment_factor(rv, T) + payment_factor(rf, Tf) - payment_factor(rv, Tf))
+    # Calculate new_payment_factor using the corrected formula
+    # new_payment_factor = (1+rf)**Tf * (1+rv)**(T-Tf) / c
+    # where c = 1/rf*((1+rf)**Tf-1) + 1/rv*((1+rv)**(T-Tf)-1) + 1/rf*((1+rf)**Tf-1)*((1+rv)**(T-Tf)-1)
+
+    numerator = (1 + rf)**Tf * (1 + rv)**(T - Tf)
+    c = (1/rf * ((1 + rf)**Tf - 1) +
+         1/rv * ((1 + rv)**(T - Tf) - 1) +
+         1/rf * ((1 + rf)**Tf - 1) * ((1 + rv)**(T - Tf) - 1))
+    new_payment_factor = numerator / c
+
+    U = T * G * new_payment_factor
 
     print(f"\nTotal amount to be paid: ${U:,.2f}")
     print(f"Monthly payment: ${U/T:,.2f}")
